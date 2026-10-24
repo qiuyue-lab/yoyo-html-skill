@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>听懂了，不代表能走下一步 · 学习路径模板</title>
+<!--
+  yoyo-html-skill 通用骨架
+  1. 复制本文件，改 title、顶栏、nav.spine、每个 section.station
+  2. 配图用 figure.yo-fig + data-yo-*（没图时加 class="yo-slot"）
+  3. 链接用 a.btn，新开窗口；点链接不会进入下一站
+  4. 浏览：自己滚。带领：按 G，空格顺着往下揭，揭完才滑到下一段
+  5. 窄栏长文。图贴在句子旁边，不要铺满。左侧只有几个词，不要 01 到第 N 页
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
+<style>
+:root{
+  --bg:#f5f0e8; --ink:#1a1410; --paper:#fff;
+  --a1:#c8432a; --a2:#2a5fc8; --a3:#e8a020; --a4:#2a8c4a; --a5:#6b3fa0;
+  --muted:rgba(26,20,16,.56); --line:rgba(26,20,16,.14);
+  --shadow:6px 6px 0 var(--ink); --radius:6px;
+  --fb:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --fm:"Space Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth; scroll-padding-top:120px}
+body{
+  font-family:var(--fb); color:var(--ink); background:var(--bg);
+  background-image:radial-gradient(circle,rgba(26,20,16,.09) 1.4px,transparent 1.4px);
+  background-size:28px 28px; line-height:1.55;
+}
+a{color:var(--a2)}
+img{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--a3); outline-offset:2px}
+
+.progress{
+  position:fixed; top:0; left:0; height:3px; width:0; z-index:50;
+  background:var(--a1); pointer-events:none;
+}
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:14px;
+  padding:14px 28px; background:rgba(245,240,232,.88); backdrop-filter:blur(10px);
+}
+.where{margin-left:18px; font-size:13px; font-weight:700; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.brand{font-weight:900; font-size:15px}
+.brand small{display:block; font-weight:400; color:var(--muted); font-size:12px}
+.modes{margin-left:auto; display:flex; gap:8px; align-items:center}
+.chip, button.chip{
+  font-family:var(--fm); font-size:12px; font-weight:700;
+  padding:6px 12px; border:2px solid var(--ink); border-radius:999px;
+  background:#fff; cursor:pointer; color:var(--ink);
+}
+button.chip.on{background:var(--ink); color:var(--bg)}
+.help{font-family:var(--fm); font-size:11px; color:var(--muted)}
+
+.shell{max-width:760px; margin:0 auto; padding:8px 28px 140px}
+.spine{
+  position:fixed; left:max(20px, calc(50vw - 500px)); top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:16px; z-index:30;
+}
+.spine a{
+  font-size:13px; font-weight:700; color:rgba(26,20,16,.38);
+  text-decoration:none; letter-spacing:.04em;
+}
+.spine a:hover{color:var(--ink)}
+.spine a.now{color:var(--ink)}
+
+.journey{min-width:0}
+.station{
+  position:relative; padding:22px 0 6px;
+  border:none; scroll-margin-top:88px;
+}
+.station.turn{padding-top:92px}
+#s1{padding-top:36px}
+.kicker{
+  font-size:13px; letter-spacing:.12em; color:var(--a1);
+  font-weight:700; margin-bottom:8px;
+}
+.station h1,.station h2{font-weight:900; line-height:1.22; letter-spacing:-.02em}
+.station h1{font-size:clamp(28px,4vw,42px); margin:8px 0 18px}
+.station h2{font-size:clamp(22px,2.6vw,30px); margin:6px 0 16px}
+.lede{font-size:20px; color:var(--muted); max-width:38em}
+.notes{display:none}
+
+.go{display:none}
+
+/* 组件 */
+.btn{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--fb); font-weight:800; font-size:15px;
+  padding:10px 16px; border:2px solid var(--ink); border-radius:var(--radius);
+  background:#fff; box-shadow:3px 3px 0 var(--ink); text-decoration:none; color:var(--ink);
+}
+.btn.ghost{box-shadow:none; background:transparent}
+.exits{list-style:none; display:flex; flex-wrap:wrap; gap:12px; margin-top:20px}
+
+.beat{
+  display:grid; grid-template-columns:minmax(0,1.15fr) minmax(260px,46%);
+  gap:16px 28px; align-items:center; margin-top:4px;
+}
+.beat.fig-lead{grid-template-columns:minmax(260px,46%) minmax(0,1.15fr)}
+.yo-fig{margin:0; background:transparent; border:0; box-shadow:none}
+.yo-fig img{
+  width:100%; max-height:280px; object-fit:contain; object-position:center bottom;
+  mix-blend-mode:multiply;
+}
+.yo-fig figcaption{padding:2px 0 0; font-size:13px; color:var(--muted)}
+.yo-slot .yo-ph{
+  min-height:120px; display:flex; align-items:flex-end;
+  padding:8px 0; color:var(--muted); font-weight:700; font-size:13px;
+}
+
+.split{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0}
+.card{
+  background:#fff; border:2px solid var(--ink); box-shadow:var(--shadow);
+  border-radius:var(--radius); padding:20px 22px;
+}
+.card h3{font-size:18px; margin-bottom:8px}
+.card.bad{background:#fbe3dc}
+.card.good{background:#dff0e4}
+.steps{display:flex; flex-direction:column; gap:12px; margin:18px 0}
+.step-item{
+  display:grid; grid-template-columns:48px 1fr; gap:14px; align-items:start;
+  background:#fff; border:2px solid var(--ink); border-radius:var(--radius); padding:14px 16px;
+}
+.n{font-family:var(--fm); font-weight:700; font-size:20px; color:var(--a1)}
+
+.do-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:18px}
+.pick{
+  text-align:left; cursor:pointer; font-family:var(--fb);
+  background:#fff; border:2px solid var(--ink); border-radius:var(--radius);
+  padding:16px; box-shadow:3px 3px 0 var(--ink);
+}
+.pick:hover{transform:translate(-1px,-1px)}
+.pick.on{background:var(--ink); color:var(--bg)}
+.reveal{margin-top:16px; padding:14px 16px; background:#fff; border-left:4px solid var(--a3); display:none}
+.reveal.show{display:block}
+
+[data-step]{transition:opacity .35s ease, transform .35s ease}
+body.guide [data-step]:not(.on){opacity:.18; transform:translateY(8px); filter:grayscale(.3)}
+
+@media (max-width:1100px){ .spine{display:none} }
+@media (max-width:860px){
+  .shell{padding:8px 16px 96px}
+  .brand small{display:none}
+  .station{scroll-margin-top:84px}
+  .station.turn{padding-top:56px}
+  .split,.do-grid,.beat,.beat.fig-lead{grid-template-columns:1fr}
+  .yo-fig{width:min(420px, 92%)}
+  .yo-fig img{max-height:240px}
+  .help{display:none}
+  .station h1{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="topbar">
+  <div class="brand">YoYo 学习路径 <small>复制后改各段</small></div>
+  <div class="where" id="where">先把人留住</div>
+  <div class="modes">
+    <button class="chip on" id="btnBrowse" type="button">浏览</button>
+    <button class="chip" id="btnGuide" type="button">带领</button>
+    <span class="help">G 切换 · 空格顺着往下走</span>
+  </div>
+</header>
+
+<nav class="spine" aria-label="路径">
+  <a href="#s1">留住</a>
+  <a href="#s3">判断</a>
+  <a href="#s6">带走</a>
+</nav>
+
+<div class="shell">
+
+<main class="journey">
+
+<section class="station st-hook turn" id="s1" data-title="钩子" data-phase="s1">
+  <div class="kicker">先停一下</div>
+  <h1>他们点头了，<span style="color:var(--a1)">不代表</span>能走下一步。</h1>
+  <p class="lede">这不是一页一页往后翻的课件。这是一条学习路径：一站一个认知动作，走完要能做事。</p>
+  <aside class="notes">开场不要解释模板。先让对方感到「听懂」和「能走」的差别。</aside>
+  <p class="go"><a href="#s2">下一步：你原来怎么想 →</a></p>
+</section>
+
+<section class="station st-split" id="s2" data-title="你原来怎么想" data-phase="s1">
+  <h2>你是在「放映」，还是在「带着走」？</h2>
+  <div class="split">
+    <article class="card bad" data-step="1">
+      <h3>放映</h3>
+      <p>一页一个标题。听众跟着你的遥控器走。走完，他们记得封面，不记得自己下一步点哪里。</p>
+    </article>
+    <article class="card good" data-step="2">
+      <h3>带着走</h3>
+      <p>一站一件事。人可以自己滚，也可以被你一步一步揭开。中间随时能点开工具，离开页面也能继续做。</p>
+    </article>
+  </div>
+  <aside class="notes">让对方自己对号入座。不要在这里开始讲 skill 目录。</aside>
+  <p class="go"><a href="#s3">下一步：核心判断 →</a></p>
+</section>
+
+<section class="station st-figure turn" id="s3" data-title="核心判断" data-phase="s3">
+  <div class="kicker">只要记住一件事</div>
+  <div class="beat">
+    <div>
+      <h2>把散落的想法，收成一个结构。</h2>
+      <p class="lede">精确的字写在 HTML 里。图只负责这一个动作，贴在句子旁边，不要铺成一张海报。</p>
+    </div>
+    <figure class="yo-fig"
+            data-yo-prompt="YoYo 把散落的想法拉进写着「整理」的箱子"
+            data-yo-type="概念隐喻"
+            data-yo-labels="认知锚点/整理/一张一结构">
+      <img src="assets/demo-yoyo.png" alt="YoYo 把散落的想法拉进整理箱">
+      <figcaption>一张小草图。</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">强调：不是每站都配图。这张图是认知锚点，不是装饰。</aside>
+  <p class="go"><a href="#s4">下一步：三种材料 →</a></p>
+</section>
+
+<section class="station st-steps" id="s4" data-title="三种材料" data-phase="s3">
+  <h2>一站里只有三种材料。</h2>
+  <div class="steps">
+    <div class="step-item" data-step="1"><div class="n">A</div><div><b>结构</b>用 HTML / SVG。框架、对比、数字、步骤——文字不能错的，不要画进图里。</div></div>
+    <div class="step-item" data-step="2"><div class="n">B</div><div><b>隐喻</b>用 YoYo 图。封面、转折、情绪。一条路径里大约 3–6 张，不要站站都生图。</div></div>
+    <div class="step-item" data-step="3"><div class="n">C</div><div><b>出口</b>用链接。任务页、工具、下一篇。点它，人应该能离开这里去做事。</div></div>
+  </div>
+  <figure class="yo-fig yo-slot"
+          data-yo-prompt="YoYo 站在「听懂」和「能走」之间的桥上铺木板"
+          data-yo-type="概念隐喻"
+          data-yo-labels="听懂/能走/下一步">
+    <div class="yo-ph">这里将放：YoYo 在「听懂」和「能走」之间铺桥<br><span style="font-weight:400">生成后把 img 填进来，去掉 yo-slot</span></div>
+  </figure>
+  <aside class="notes">示范占位插槽。真正生成时回填 src。</aside>
+  <p class="go"><a href="#s5">下一步：试一试 →</a></p>
+</section>
+
+<section class="station st-do" id="s5" data-title="试一试" data-phase="s3">
+  <h2>下面这段话，更像哪一种站点？</h2>
+  <p class="lede">「今天我们讲三个原则：以学生为中心、数据驱动、因材施教。」</p>
+  <div class="do-grid" data-interactive>
+    <button class="pick" type="button" data-ans="a">放映：三条并列，没有下一步</button>
+    <button class="pick" type="button" data-ans="b">带着走：但还缺一个动作</button>
+    <button class="pick" type="button" data-ans="c">已经是一个完整站点</button>
+  </div>
+  <div class="reveal" id="s5reveal">更像放映。要变成站点，得改成一件能做的事——比如「把这三条收成一个提问，去问你的班」。出口是那一个提问，不是三条原则。</div>
+  <aside class="notes">点完再讲。正确答案是第一个。</aside>
+  <p class="go"><a href="#s6">下一步：带走 →</a></p>
+</section>
+
+<section class="station st-exit turn" id="s6" data-title="带走" data-phase="s6">
+  <div class="kicker">离开之后</div>
+  <h2>把讲稿丢进来，从这份骨架开始改。</h2>
+  <p class="lede">复制本文件。改各站。认知转折处写 YoYo 插槽。链接随时插。不要把它改回翻页课件。</p>
+  <ul class="exits">
+    <li><a class="btn" href="../SKILL.md" target="_blank" rel="noopener">打开 skill 说明 ↗</a></li>
+    <li><a class="btn ghost" href="../ip/_template/IP.md" target="_blank" rel="noopener">换成你自己的形象 ↗</a></li>
+  </ul>
+  <aside class="notes">收尾给一个立刻能做的动作：复制模板，贴讲稿。</aside>
+</section>
+
+</main>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const stations = $$(".station");
+const spineLinks = $$(".spine a");
+const whereNames = { s1:"先把人留住", s3:"收成一个结构", s6:"离开之后还能做" };
+let guide = false;
+
+function markPlace(id){
+  const phase = document.getElementById(id)?.dataset.phase || "s1";
+  spineLinks.forEach(a => a.classList.toggle("now", a.getAttribute("href") === "#"+phase));
+  const where = $("#where");
+  if (where && whereNames[phase]) where.textContent = whereNames[phase];
+}
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) markPlace(e.target.id); });
+}, {rootMargin:"-40% 0px -45% 0px", threshold:0});
+stations.forEach(s => io.observe(s));
+addEventListener("scroll", () => {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  const bar = $("#progress");
+  if (bar) bar.style.width = ((h > 0 ? scrollY / h : 0) * 100) + "%";
+}, {passive:true});
+
+function setGuide(on){
+  guide = on;
+  document.body.classList.toggle("guide", on);
+  $("#btnGuide").classList.toggle("on", on);
+  $("#btnBrowse").classList.toggle("on", !on);
+  if (!on) $$("[data-step]").forEach(el => el.classList.add("on"));
+  else {
+    $$("[data-step]").forEach(el => el.classList.remove("on"));
+    stations[0]?.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+$("#btnGuide").onclick = () => setGuide(true);
+$("#btnBrowse").onclick = () => setGuide(false);
+setGuide(false);
+
+function currentStation(){
+  const y = scrollY + innerHeight*0.35;
+  return stations.findLast(s => s.offsetTop <= y) || stations[0];
+}
+function advance(){
+  const st = currentStation();
+  const hidden = [...st.querySelectorAll("[data-step]")].filter(el => !el.classList.contains("on"));
+  if (hidden.length){ hidden[0].classList.add("on"); return; }
+  const i = stations.indexOf(st);
+  if (i < stations.length-1) stations[i+1].scrollIntoView({behavior:"smooth", block:"start"});
+}
+function retreat(){
+  const st = currentStation();
+  const shown = [...st.querySelectorAll("[data-step].on")];
+  if (shown.length){ shown.at(-1).classList.remove("on"); return; }
+  const i = stations.indexOf(st);
+  if (i>0) stations[i-1].scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+document.addEventListener("click", e => {
+  if (!guide) return;
+  if (e.target.closest("a,button,input,textarea,select,iframe,[data-interactive],.yo-fig")) return;
+  advance();
+});
+document.addEventListener("keydown", e => {
+  const t = e.target;
+  if (t && t.matches && t.matches("input,textarea,[contenteditable='true']")) return;
+  if (e.key==="g" || e.key==="G"){ setGuide(!guide); return; }
+  if (!guide) return;
+  if ([" ","ArrowRight","ArrowDown"].includes(e.key)){ e.preventDefault(); advance(); }
+  if (["ArrowLeft","ArrowUp"].includes(e.key)){ e.preventDefault(); retreat(); }
+});
+
+$$("#s5 .pick").forEach(btn => {
+  btn.onclick = () => {
+    $$("#s5 .pick").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    const box = $("#s5reveal");
+    box.classList.add("show");
+    box.textContent = btn.dataset.ans==="a"
+      ? "对。这是放映：三条并列，听众没有下一步可做。"
+      : "还不是。它没有给一个动作，也没有出口。更像放映。改成「把这三条收成一个提问，去问你的班」。";
+  };
+});
+</script>
+</body>
+</html>
